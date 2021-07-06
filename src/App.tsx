@@ -1,26 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react';
+import CitySelector from './components/CitySelector';
 import './App.css';
+import WeatherCard from './components/WeatherCard';
 
 function App() {
+  const [title, setTitle] = useState<string>('Select City')
+  const [data, setData] = useState<APIResult>()
+
+  useEffect(() => {
+    if (!title) setData(undefined)
+
+    fetch(`/weather-data/${title.toLowerCase()}.json`)
+      .then(r => r.json())
+      .then(r => setData(r))
+  }, [title])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="flex flex-col items-center">
+      <h2 className="m-4 mb-0 text-gray-600 font-bold text-lg">{title ? title : 'Select City'}</h2>
+      <div>
+        <CitySelector
+          onChange={value => value ? setTitle(value) : setTitle('')}
+        />
+          <WeatherCard
+            data={data}
+          />
+      </div>
     </div>
   );
 }
 
 export default App;
+
